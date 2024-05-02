@@ -1,0 +1,23 @@
+{
+    "name": "abdelrhman-saeed/auth",
+    "description": "auth is a php lib that help in user authentication processes in multible methods and extendable to add your way for authentication",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7.8",
+        "firebase/php-jwt": "^6.10"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "AbdelrhmanSaeed\\Auth\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "abdelrhman-saeed",
+            "email": "abdelrhmansaeed001@gmail.com"
+        }
+    ]
+}
