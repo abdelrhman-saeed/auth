@@ -1,4 +1,6 @@
 <?php
+use AbdelrhmanSaeed\Auth\Authenticators\JWTAuthenticator;
+use AbdelrhmanSaeed\Auth\Authenticators\StrTknAuthenticator;
 
 /**
  * authentication types: api, session
@@ -15,8 +17,8 @@ return [
         /**
          * the token type to authenticate with either jwts or string based tokens
          */
-        'token-type' => 'jwt',
-        // 'token-type' => 'string-token',
+        'token-type' => JWTAuthenticator::class,
+        // 'token-type' => StrTknAuthenticator::class,
     ],
 
     'jwt' => [

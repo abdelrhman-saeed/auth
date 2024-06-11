@@ -1,47 +1,98 @@
 <?php
 
 namespace AbdelrhmanSaeed\Auth;
+
+use Doctrine\ORM\EntityManager;
 use AbdelrhmanSaeed\Auth\Authenticators\AbstractAuth;
 
 
 class Auth
 {
-    public static AbstractAuth $authenticator;
+    private array $config = [];
 
-    public static ?array $userAtrributes = null;
+    public function __construct(
+
+            /**
+             * @param EntityManager $entityManager
+             * is a Doctrine\ORM\EntityManager::class
+             * the Auth needs it to install some database entities and interact with the database
+             */
+            private EntityManager $entityManager,
+
+            /**
+             * @param null|AbstractAuth $authenticator
+             * holds a session authenticator or an api authenticator
+             */
+            private ?AbstractAuth $authenticator = null
+        )
+    {
+        /**
+         * loading the user configs for the Auth::class
+         */
+        $this->config = require( $_SERVER['DOCUMENT_ROOT'] . '/auth.php' );
+        $this->set_authenticator();
+    }
+
+    private function set_authenticator(): self
+    {
+        if (!is_null($this->authenticator)) {
+            return $this;
+        }
+
+        if ($this->config['current-authentication'] == 'api')
+        {
+            $this->authenticator =
+                new $this->config['api-config']['token-type'] ($this->config, $this->entityManager);
+        }
+
+        return $this;
+    }
 
     /**
      * @method bool authenticate()
      * authenticates with the user attributes
+     * 
+     * @param array $payload
+     * this is an additional payload to store in a token or in a session store
+     * like user_id or role name or role id etc.
+     * 
+     * you must set the user_id key => value pair
+     * in the @param array $payload
      */
-    public static function authenticate(array $userAtrributes): void {
-        self::$authenticator->authenticate($userAtrributes);
+    
+    public function authenticate(array $payload = []): void {
+
+        if (!isset($payload['user_id'])) {
+            throw new \Exception("\$payload['user_id'] key is not set!");
+        }
+
+        $this->authenticator->authenticate($payload);
     }
 
     /**
      * @method bool check()
      * check if the user is authenticated
      */
-    public static function is_authenticated(): bool {
-        return self::$authenticator->is_authenticated();
+    public function is_authenticated(): bool {
+        return $this->authenticator->is_authenticated();
     }
 
     /**
-     * @method bool logout()
+     * @method void logout()
      * logs the user out :/
      */
-    public static function deauthenticate(): void {
-        self::$authenticator->deauthenticate();
+    public function deauthenticate(): void {
+        $this->authenticator->deauthenticate();
     }
 
     /**
-     * static @method getUserAttributes()
+     * @method get_payload()
      * return the user attributes as an array
      * null will be returned if user is not authenticated
      * 
      * user will be set when you call the authenticate() method
      */
-    public static function getUserAttributes(): ?array {
-        return self::$userAtrributes;
-    }
+    // public function get_payload(): ?array {
+    //     return $this->payload;
+    // }
 }

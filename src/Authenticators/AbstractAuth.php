@@ -1,6 +1,7 @@
 <?php
 
 namespace AbdelrhmanSaeed\Auth\Authenticators;
+use Doctrine\ORM\EntityManager;
 
 
 /**
@@ -11,11 +12,11 @@ namespace AbdelrhmanSaeed\Auth\Authenticators;
  */
 abstract class AbstractAuth
 {
-    protected array $config = [];
-
-    public function __construct()
+    public function __construct(
+            protected array $config = [],
+            protected EntityManager $entityManager
+        )
     {
-        $this->config = require( $_SERVER['DOCUMENT_ROOT'] . '/auth.php' );
     }
     /**
      * @method void authenticate()
