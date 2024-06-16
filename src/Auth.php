@@ -29,7 +29,7 @@ class Auth
         /**
          * loading the user configs for the Auth::class
          */
-        $this->config = require( $_SERVER['DOCUMENT_ROOT'] . '/auth.php' );
+        $this->config = require(__DIR__ . '/Config/auth.php');
         $this->set_authenticator();
     }
 
@@ -39,11 +39,12 @@ class Auth
             return $this;
         }
 
-        if ($this->config['current-authentication'] == 'api')
-        {
-            $this->authenticator =
-                new $this->config['api-config']['token-type'] ($this->config, $this->entityManager);
-        }
+        $authenticatorClass = $this->config[ $this->config['current-authentication'] ] ['authenticator'];
+
+        $this->authenticator = new ($authenticatorClass)(
+            ( $this->config['authentication-config'][$authenticatorClass] ),
+            ( $this->entityManager )
+        );
 
         return $this;
     }

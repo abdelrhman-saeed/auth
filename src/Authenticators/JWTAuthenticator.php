@@ -58,9 +58,11 @@ class JWTAuthenticator extends AbstractAuth
          * retriving the key for hashing the algorithm
          * wiether it's an HS256 key or RS256
          */
-        $this->key = ( $this->config['jwt']['algs'] );
-        $this->key = ( $this->alg == 'RS256' )
-            ? ( $this->key['rs256']['prv'] ) : ( $this->key['hs256'] );
+        $this->key = $this->config['algs'];
+
+        $this->key = $this->alg == 'RS256'
+            ? $this->key['rs256']['prv']
+            : $this->key['hs256'];
 
 		return $this;
 	}
@@ -70,7 +72,7 @@ class JWTAuthenticator extends AbstractAuth
         /**
          * retriving the defined hashing algorithm for the token
          */
-        $this->alg = $this->config['jwt']['header']['alg'];
+        $this->alg = $this->config['header']['alg'];
         return $this;
     }
 
@@ -107,14 +109,14 @@ class JWTAuthenticator extends AbstractAuth
          * if not null the default expiration date of the token
          * will change to $expire_after
          */
-        !is_null($expire_after) ?: $this->config['jwt']['payload']['exp'] = $expire_after;
+        !is_null($expire_after) ?: $this->config['payload']['exp'] = $expire_after;
 
         /**
          * merging the Registered claims of the payload
          * that are defined in the auth.config file
          * with the private onces those are set with @method set_payload()
          */
-        $payload = $this->config['jwt']['payload'] +$this->get_payload();
+        $payload = $this->config['payload'] +$this->get_payload();
 
         /**
          * setting the generated token to the @param array $token['token']
@@ -153,7 +155,7 @@ class JWTAuthenticator extends AbstractAuth
          */
         try
         {
-            $key = ( $this->config['jwt']['algs'] );
+            $key = ( $this->config['algs'] );
             $key = ( $this->alg == 'RS256' ) ? ( $key['rs256']['pub'] ) : ( $this->key['hs256'] );
 
             return is_a( (JWT::decode($token, new Key($key, $this->alg)) ), (\stdClass::class) );
