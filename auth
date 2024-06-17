@@ -1,4 +1,0 @@
-#!/usr/bin/env php
-<?php
-
-symlink(__DIR__ . '/src/Config/auth.php', './auth.php');
